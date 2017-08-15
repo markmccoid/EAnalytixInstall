@@ -6,9 +6,11 @@ const { remote } = require('electron');
 const dialog = remote.dialog;
 
 const nativeFileAccess = window.require('../app/nativeFileAccess');
+import { Header } from './CommonStyled';
 
 const Wrapper = styled.div`
 	display: flex;
+	flex-direction: column;
 	padding: 10px;
 	margin: 10px;
 `;
@@ -18,6 +20,7 @@ class Settings extends React.Component {
 		productionFolder: '',
 		backupFolder: ''
 	};
+	//---My functions
 	showFolderDialog = title => {
 		const dialogOptions = {
 			title,
@@ -26,45 +29,36 @@ class Settings extends React.Component {
 		let folderSelected = dialog.showOpenDialog(dialogOptions);
 		return folderSelected ? folderSelected[0] : '';
 	}
+	//---
 	selectProductionFolder = () => {
 		let folderSelected = this.showFolderDialog('Select Analytix Production Folder');
-
-		this.setState(prevState => {
-			//If previous state of backupFolder not populated, then guess otherwise leave alone
-			let newBackupFolder = !prevState.backupFolder ?
-														nativeFileAccess.guessBackupDir(folderSelected) :
-														prevState.backupFolder;
-			return ({
-				productionFolder: folderSelected,
-				backupFolder: newBackupFolder
-			});
-		});
+		this.props.onStoreProductionFolder(folderSelected);
 	}
+	//---
 	selectBackupFolder = () => {
 		let folderSelected = this.showFolderDialog('Select Analytix Backup Folder');
-		this.setState({
-				backupFolder: folderSelected
-			});
+		this.props.onStoreBackupFolder(folderSelected);
 		}
-
+	//-------------------------
 	render() {
 
 		return (
 			<Wrapper>
+				<Header textAlign="left">Select location of Analytix production directory</Header>
 				<Input
 					size="small my-input-size"
 					icon={{ name: 'folder open outline', circular: true, link: true, onClick: this.selectProductionFolder}}
 					placeholder='Choose Production Folder...'
-					value={this.state.productionFolder}
+					value={this.props.productionFolder}
 				/>
 				<br />
+				<Header textAlign="left">Select backup directory or accept suggested directory</Header>
 				<Input
 					size="small my-input-size"
 					icon={{ name: 'folder open outline', circular: true, link: true, onClick: this.selectBackupFolder}}
 					placeholder='Choose Backup Folder...'
-					value={this.state.backupFolder}
+					value={this.props.backupFolder}
 				/>
-
 			</Wrapper>
 		)
 	}

@@ -1,33 +1,109 @@
 import React from 'react';
+import styled  from 'styled-components';
 import { Button } from 'semantic-ui-react'
 import { Step } from 'semantic-ui-react'
 
 const nativeFileAccess = window.require('../app/nativeFileAccess');
+
 import Settings from './Settings';
+import ProgressButtons from './ProgressButtons';
+import StateDisplay from './StateDisplay';
+import { Header } from './CommonStyled';
 
-const Main = () => {
-	return (
-		<div>
-			This is the Main Component
-			<Settings />
-			<div>
-				<Button primary onClick={()=> console.log(nativeFileAccess.getLocalPath('/analytix/qvw'))}>
-					Click Here
-				</Button>
-			</div>
+const Wrapper = styled.div`
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		width: 900px;
+`;
+const ButtonWrapper = styled.div`
+	display: flex;
+	justify-content: space-around;
+`
+const InstallTypeWrapper = styled.div`
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	margin: 10px;
+`;
 
 
+class Main extends React.Component {
+	state = {
+		productionFolder: '',
+		backupFolder: '',
+		type: 'install', //or 'upgrade'
+		currentStep: 1
+	}
+	//------My functions
+	storeProductionFolder = folderSelected => {
+		this.setState(prevState => {
+			//If previous state of backupFolder not populated, then guess otherwise leave alone
+			let newBackupFolder = !prevState.backupFolder ?
+														nativeFileAccess.guessBackupDir(folderSelected) :
+														prevState.backupFolder;
+			return ({
+				productionFolder: folderSelected,
+				backupFolder: newBackupFolder
+			});
+		});
+	}
+	storeBackupFolder = folderSelected => {
+		this.setState({
+				backupFolder: folderSelected
+			});
+		}
+	updateCurrentStep = newStep => {
+		this.setState({currentStep: newStep});
+	}
+	//------------------
+	render() {
+		let currentStep = this.state.currentStep;
+		let JSXStep;
+		const installType = <InstallTypeWrapper>
+				<Header textAlign="center">Select "Install" to install Analytix or "Upgrade" <br />
+					to upgrade an existing installation of Analytix <br />
+					then click "Next"
+				</Header>
+				<Button.Group>
+					<Button toggle active={this.state.type==='install'}
+						onClick={()=> this.setState({type: 'install'})}>Install</Button>
+					<Button.Or />
+					<Button toggle active={this.state.type==='upgrade'}
+						onClick={()=> this.setState({type: 'upgrade'})}>Upgrade</Button>
+				</Button.Group>
+			</InstallTypeWrapper>;
+		const folderSelection = <Settings
+				{...this.state}
+				onStoreProductionFolder={this.storeProductionFolder}
+				onStoreBackupFolder={this.storeBackupFolder}
+			/>;
 
-			<div>
-				<Button circular icon='settings' />
-			</div>
-		</div>
-	)
-};
+		switch (currentStep) {
+			case 1:
+				JSXStep = installType;
+				break;
+			case 2:
+				JSXStep = folderSelection;
+				break;
+			default:
+				JSXStep = null;
+		};
+
+		return (
+			<Wrapper>
+				{JSXStep}
+				<ProgressButtons currentStep={currentStep} onUpdateCurrentStep={this.updateCurrentStep} />
+				<StateDisplay {...this.state} />
+			</Wrapper>
+		);
+	}
+}
 
 export default Main;
 
-/*---Steps semantic ui code
+/* ---Steps semantic ui code
 
 const steps = [
   { completed: true, title: 'Backup Production', description: 'Backup Production Directory' },

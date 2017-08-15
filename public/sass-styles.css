@@ -48,4 +48,7 @@ body {
   -webkit-font-smoothing: antialiased; }
 
 .my-input-size {
-  width: 400px; }
+  width: 500px; }
+
+.main-buttons {
+  margin: 0 25px !important; }
