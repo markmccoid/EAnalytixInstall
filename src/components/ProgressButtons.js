@@ -9,6 +9,7 @@ const ButtonWrapper = styled.div`
 
 const ProgressButtons = props => {
 	let { currentStep, onUpdateCurrentStep } = props;
+	let nextBtnDisabledFlag = props.type === 'install' && currentStep === 3 ? true : false;
 	return (
 		<ButtonWrapper>
 			<Button primary disabled={currentStep === 1 ? true : false}
@@ -18,6 +19,7 @@ const ProgressButtons = props => {
 			</Button>
 			<Button primary
 				className="main-buttons"
+				disabled={nextBtnDisabledFlag}
 				onClick={() => onUpdateCurrentStep(currentStep + 1)}>
 				Next
 			</Button>

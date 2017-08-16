@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Message } from 'semantic-ui-react'
 
 const StateDisplay = props => {
@@ -11,10 +12,16 @@ const StateDisplay = props => {
 	    <Message.List>
 	      <Message.Item><strong>{formatType} Analytix</strong></Message.Item>
 	      {productionFolder && <Message.Item><strong>Production Folder:</strong>{productionFolder}</Message.Item>}
-				{backupFolder && <Message.Item><strong>Backup Folder:</strong>{backupFolder}</Message.Item>}
+				{backupFolder && props.type === 'upgrade' && <Message.Item><strong>Backup Folder:</strong>{backupFolder}</Message.Item>}
 	    </Message.List>
 	  </Message>
 	)
 };
+
+StateDisplay.propTypes = {
+	productionFolder: PropTypes.string,
+	backupFolder: PropTypes.string,
+	type: PropTypes.string
+}
 
 export default StateDisplay;
