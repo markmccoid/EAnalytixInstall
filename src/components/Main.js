@@ -35,7 +35,8 @@ class Main extends React.Component {
 		productionFolder: '',
 		backupFolder: '',
 		type: 'install', //or 'upgrade'
-		status: undefined, // or 'working' set status to working when installing or upgrading.
+		status: undefined, // or 'working' set status to working when installing or upgrading, 'finished' = success
+		statusMessage: undefined,
 		currentStep: 1
 	}
 	//------My functions
@@ -66,8 +67,7 @@ class Main extends React.Component {
 		this.setState({status: 'working'});
 		nativeFileAccess.installAnalytix(this.state.productionFolder)
 			.then(installStatus => {
-				console.log(installStatus);
-				this.setState({status: installStatus});
+				this.setState({status: installStatus.status, statusMessage: installStatus.msg});
 			});
 	}
 	//------------------
@@ -119,7 +119,7 @@ class Main extends React.Component {
 			default:
 				JSXStep = null;
 		};
-console.log(currentStep + this.state.type[0] || '')
+//console.log(currentStep + this.state.type[0] || '')
 		return (
 			<Wrapper>
 				{JSXStep}

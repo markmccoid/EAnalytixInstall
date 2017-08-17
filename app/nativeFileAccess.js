@@ -32,6 +32,21 @@ const guessBackupDir = (productionFolder) => {
 	return path.join(productionFolder, '../BackupAnalytix');
 }
 
+const stringifyError = errObj => {
+	let err = [];
+	if (typeof errObj === 'object') {
+		for (var property in errObj) {
+	  	err.push(`${property}: ${errObj[property]}`);
+		}
+		return err.join('__');
+	}
+	//else not an object so just return what was passed
+	return errObj;
+
+
+}
+//-------------------------------------------
+//--Install Analytix to 'productionFolder'
 const installAnalytix = productionFolder => {
 	let rootDataDir = getLocalPath('');
 	let groupASARBase = '/include/GroupEditor/resources';
@@ -59,25 +74,11 @@ const installAnalytix = productionFolder => {
 		return backToASARArray;
 	}
 	//Start the install process.  First renaming all the .asar files to .hold
-	return Promise.all(asarToHoldArray)
-		.then(() => {
-			console.log('Rename of ASAR files complete');
-			//Copy Anaytix files to new directory
-			return fs.copy(rootDataDir, productionFolder)
-				.then(() => {
-					console.log('Copy of files to Analytix Install Directory complete');
-					//Now rename all the .hold back to .asar
-					return Promise.all(renameToASAR())
-						.then(() => {
-							console.log('Rename of .hold back to .asar complete');
-							return ('finished');
-						});
-				})
-				.catch(err => {
-					console.log('Error Installing Analytix', err);
-					return ('error');
-				});
-		});
+	return Promise.all(asarToHoldArray) //--rename .asar to .hold
+		.then(() => fs.copy(rootDataDir, productionFolder)) //--copy analytix files to their new home
+		.then(() => Promise.all(renameToASAR())) //--rename .hold back to .asar in both the data directory and the newly installed dir.
+		.then(() => ({status: 'finished', msg: 'Analytix Installation Complete'})) //--return 'finished' status
+		.catch((err) => ({status: 'error', msg: stringifyError(err)})) //--if error return 'error' status
 }
 
 

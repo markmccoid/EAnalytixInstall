@@ -19,10 +19,6 @@ const Wrapper = styled.div`
 `;
 
 class Settings extends React.Component {
-	state = {
-		productionFolder: '',
-		backupFolder: ''
-	};
 	//---My functions
 	showFolderDialog = title => {
 		const dialogOptions = {
