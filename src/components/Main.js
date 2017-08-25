@@ -70,6 +70,9 @@ class Main extends React.Component {
 				this.setState({status: installStatus.status, statusMessage: installStatus.msg});
 			});
 	}
+	clearInstallError = () => {
+		this.setState({status: undefined, statusMessage: undefined})
+	}
 	//------------------
 	render() {
 		let currentStep = this.state.currentStep;
@@ -97,7 +100,9 @@ class Main extends React.Component {
 				onStoreBackupFolder={this.storeBackupFolder}
 			/>;
 		//
-		const installFinal = <InstallConfirm status={this.state.status} onInstallAnalytix={this.installAnalytix}/>;
+		const installFinal = <InstallConfirm status={this.state.status}
+														onInstallAnalytix={this.installAnalytix}
+													/>;
 		//-----------------------------------------------
 		//--Determine what to show based on state.currentStep concated with the state type
 		//--will be 1i/1u, etc

@@ -11,7 +11,7 @@ const StateDisplay = props => {
   // 	console.log('statusMessage Property', name);
 	// }
 	return (
-		<SimpleWrapper width="600px">
+		<SimpleWrapper maxWidth="600px" minWidth="300px">
 		<Message>
 	    <Message.Header>Current Settings</Message.Header>
 	    <Message.List>

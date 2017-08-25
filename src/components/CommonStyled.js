@@ -8,5 +8,6 @@ export const Header = styled.div`
 
 export const SimpleWrapper = styled.div`
 	margin: 10px 5px;
-	width: ${props => props.width || '500px'}
+	max-width: ${props => props.maxWidth || '500px'};
+	min-width: ${props => props.minWidth || '500px'};
 `
