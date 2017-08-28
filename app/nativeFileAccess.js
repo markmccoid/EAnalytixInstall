@@ -53,6 +53,7 @@ const installAnalytix = productionFolder => {
 	let variableASARBase = '/include/VariableEditor/resources';
 	let groupASARLocation = getLocalPath(groupASARBase);
 	let variableASARLocation = getLocalPath(variableASARBase);
+
 	//We need to rename the ASAR files, because node thinks they are actual directories
 	let asarToHoldArray = [];
 	asarToHoldArray.push(fs.rename(path.join(groupASARLocation, 'app.asar'), path.join(groupASARLocation, 'app.hold')));
@@ -73,6 +74,7 @@ const installAnalytix = productionFolder => {
 		backToASARArray.push(fs.rename(path.join(productionFolder, variableASARBase, 'electron.hold'), path.join(productionFolder, variableASARBase, 'electron.asar')));
 		return backToASARArray;
 	}
+
 	//Start the install process.  First renaming all the .asar files to .hold
 	return Promise.all(asarToHoldArray) //--rename .asar to .hold
 		.then(() => fs.copy(rootDataDir, productionFolder)) //--copy analytix files to their new home

@@ -4,8 +4,8 @@
 	"description": "NCS Analytix Installer Application",
 	"main": "index.js",
 	"scripts": {
-		"start": "webpack -w",
-		"build": "webpack -p",
+		"start": "cross-env NODE_ENV=development webpack -w",
+		"build": "cross-env NODE_ENV=production webpack -p",
 		"electron": "cross-env NODE_ENV=development electron .",
 		"electronhome": "cross-env NODE_ENV=dev-home electron .",
 		"dev": "set NODE_ENV=development",
@@ -42,6 +42,7 @@
 		"prop-types": "^15.5.10",
 		"react": "^15.6.1",
 		"react-dom": "^15.6.1",
+		"react-router-dom": "^4.2.2",
 		"resolve-url-loader": "^2.1.0",
 		"sass-loader": "^6.0.6",
 		"script-loader": "^0.7.0",

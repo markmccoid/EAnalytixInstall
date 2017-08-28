@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Button, Icon } from 'semantic-ui-react';
 import { Header } from '../CommonStyled';
+const { remote } = require('electron');
+
+import ProgressButtons from '../ProgressButtons';
 
 const Wrapper = styled.div`
 	display: flex;
@@ -12,7 +15,10 @@ const Wrapper = styled.div`
 `;
 
 const InstallConfirm = props => {
+	let btnPrevious = () => props.history.push(`/install/location`);
+	let btnNext = () => null;
 	let buttonOptions;
+
 	switch (props.status) {
 		case 'working':
 			buttonOptions = { loading: true, disabled: true, content: "Analytix Being Installed" };
@@ -34,6 +40,11 @@ const InstallConfirm = props => {
 				{...buttonOptions}
 			 	onClick={props.onInstallAnalytix}
 			/>
+			<br />
+			{props.status === 'finished'
+				? <Button primary onClick={() => remote.app.quit()}>Exit</Button>
+				: <ProgressButtons onPreviousClick={btnPrevious} onNextClick={btnNext} nextBtnDisabled />
+			}
 
 		</Wrapper>
 	)

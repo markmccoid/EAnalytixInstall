@@ -10,6 +10,7 @@ const nativeFileAccess = window.require('../app/nativeFileAccess');
 
 import InstallSettings from './InstallSettings';
 import UpgradeSettings from './UpgradeSettings';
+import ProgressButtons from '../ProgressButtons';
 
 const Wrapper = styled.div`
 	display: flex;
@@ -46,18 +47,30 @@ class Settings extends React.Component {
 		}
 	//-------------------------
 	render() {
+		let btnPrevious = () => this.props.history.push(`/`);
+		let btnNext = () => this.props.history.push(`/${this.props.type}/confirm`);
+		let settingsViewJSX;
+
 		if (this.props.type === 'install') {
-			return (<InstallSettings {...this.props}
+			settingsViewJSX = <InstallSettings {...this.props}
 								onSelectProductionFolder={this.selectProductionFolder}
 								onManualProductionFolder={this.manualFolderStore('prod')}
-							/>);
+							/>;
+		} else {
+			settingsViewJSX = <UpgradeSettings {...this.props}
+								onSelectProductionFolder={this.selectProductionFolder}
+								onSelectBackupFolder={this.selectBackupFolder}
+								onManualProductionFolder={this.manualFolderStore('prod')}
+								onManualBackupFolder={this.manualFolderStore('backup')}
+							/>;
 		}
-		return (<UpgradeSettings {...this.props}
-							onSelectProductionFolder={this.selectProductionFolder}
-							onSelectBackupFolder={this.selectBackupFolder}
-							onManualProductionFolder={this.manualFolderStore('prod')}
-							onManualBackupFolder={this.manualFolderStore('backup')}
-						/>);
+		return (
+				<div>
+					{settingsViewJSX}
+					<br />
+					<ProgressButtons onPreviousClick={btnPrevious} onNextClick={btnNext} />
+				</div>
+					);
 	}
 }
 
