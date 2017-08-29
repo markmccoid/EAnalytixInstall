@@ -4,6 +4,8 @@ const fs = require('fs-extra');
 const _ = require('lodash');
 const { remote } = require('electron');
 
+const prodBackup = require('./productionBackup');
+
 const SETTINGS_FILE = process.env.NODE_ENV === 'development' ?
 											path.join(remote.app.getAppPath(),'AnalytixInstallerSettings.json') :
 											path.join(path.dirname(remote.app.getPath('exe')),'AnalytixInstallerSettings.json');
@@ -83,9 +85,15 @@ const installAnalytix = productionFolder => {
 		.catch((err) => ({status: 'error', msg: stringifyError(err)})) //--if error return 'error' status
 }
 
+const productionBackup = (productionFolder, backupFolder) => {
+	let upgradeFolder = getLocalPath('');
+	console.log(upgradeFolder);
+	return prodBackup(productionFolder, upgradeFolder, backupFolder);
+}
 
 module.exports = {
 	getLocalPath,
 	guessBackupDir,
-	installAnalytix
+	installAnalytix,
+	productionBackup
 }

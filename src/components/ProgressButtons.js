@@ -11,28 +11,44 @@ const ButtonWrapper = styled.div`
 const ProgressButtons = props => {
 	let { onNextClick, onPreviousClick, nextBtnDisabled, prevBtnDisabled } = props;
 
-console.log('buttons', props);
 	return (
 		<ButtonWrapper>
 			<Button primary disabled={prevBtnDisabled}
-				className="main-buttons"
+				className={props.showCustomBtn ? "hide-element" : "main-buttons"}
 				onClick={() => props.onPreviousClick()}>
 				Previous
 			</Button>
 			<Button primary
-				className="main-buttons"
+				className={props.showCustomBtn ? "hide-element" : "main-buttons"}
 				disabled={nextBtnDisabled}
 				onClick={() => props.onNextClick()}>
 				Next
 			</Button>
-		</ButtonWrapper>);
+			<Button
+				className={props.showCustomBtn ? "main-buttons" : "hide-element"}
+				onClick={() => props.onCustomBtnClick()}
+				{...props.customBtnProperties}
+			/>
+
+		</ButtonWrapper>
+	);
 };
 
 ProgressButtons.propTypes = {
+	/*function called when previous button is pressed*/
 	onPreviousClick: PropTypes.func,
+	/*function called when next button is pressed*/
 	onNextClick: PropTypes.func,
+	/*disables next button if true*/
 	nextBtnDisabled: PropTypes.bool,
-	prevBtnDisabled: PropTypes.bool
+	/*disables previous button if true*/
+	prevBtnDisabled: PropTypes.bool,
+	/*if true, the previous and next buttons will be hidden and the custom button will be shown.*/
+	showCustomBtn: PropTypes.bool,
+	/*property object for a semantic ui Button component*/
+	customBtnProperties: PropTypes.object,
+	/*function called when custom button is pressed*/
+	onCustomBtnClick: PropTypes.func
 }
 
 export default ProgressButtons;

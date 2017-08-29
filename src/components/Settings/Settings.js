@@ -47,8 +47,10 @@ class Settings extends React.Component {
 		}
 	//-------------------------
 	render() {
+		//Set the next action route based on if we are on Install or Upgrade path
+		let nextAction = this.props.type === 'install' ? 'confirm' : 'backup';
 		let btnPrevious = () => this.props.history.push(`/`);
-		let btnNext = () => this.props.history.push(`/${this.props.type}/confirm`);
+		let btnNext = () => this.props.history.push(`/${this.props.type}/${nextAction}`);
 		let settingsViewJSX;
 
 		if (this.props.type === 'install') {
@@ -68,7 +70,11 @@ class Settings extends React.Component {
 				<div>
 					{settingsViewJSX}
 					<br />
-					<ProgressButtons onPreviousClick={btnPrevious} onNextClick={btnNext} />
+					<ProgressButtons
+						onPreviousClick={btnPrevious}
+						onNextClick={btnNext}
+						nextBtnDisabled={this.props.productionFolder ? false : true}
+					/>
 				</div>
 					);
 	}

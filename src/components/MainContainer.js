@@ -17,6 +17,7 @@ import Settings from './Settings/Settings';
 import ProgressButtons from './ProgressButtons';
 import StateDisplay from './StateDisplay';
 import InstallConfirm from './Install/InstallConfirm';
+import UpgradeCreateBackup from './Upgrade/UpgradeCreateBackup';
 
 import { Header } from './CommonStyled';
 
@@ -39,7 +40,7 @@ const InstallTypeWrapper = styled.div`
 `;
 
 
-class Routes extends React.Component {
+class MainContainer extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -97,10 +98,16 @@ class Routes extends React.Component {
 		this.setState({status: undefined, statusMessage: undefined})
 	}
 	//------------------
+	//--Upgrade functions
+	//------------------
+	createUpgradeBackup = (prodFolder, backupFolder) => {
+		nativeFileAccess.productionBackup(prodFolder, backupFolder);
+	}
 	render() {
 		return (
 			<Wrapper>
 				<Switch>
+					{/* sending through props to each rendered component because we need the history object to push next route/url onto history stack*/}
 					<Route exact path="/" render={(props) => <InstallTypeSelect {...this.state} {...props} onChangeInstallType={this.changeInstallType} />} />
 					{/*- Route for Installing OR Upgradig-- set folder locations  Setting component takes care of what to show for install versus upgrade -- -*/}
 					<Route path="/(install|upgrade)/location" render={props => <Settings
@@ -110,11 +117,18 @@ class Routes extends React.Component {
 							onStoreBackupFolder={this.storeBackupFolder}
 						/>}
 					/>
-					{/*- Route for Installing -- start install-- -*/}
+					{/*- Route for Installing -- allow user to perform install-- -*/}
 					<Route path="/install/confirm" render={props => <InstallConfirm
 							status={this.state.status}
 							{...props}
 							onInstallAnalytix={this.installAnalytix}
+						/>}
+					/>
+					{/*- Route for Upgrade -- creating the backup -- -*/}
+					<Route path="/upgrade/backup" render={props => <UpgradeCreateBackup
+							{...this.state}
+							{...props}
+							onCreateUpgradeBackup={this.createUpgradeBackup}
 						/>}
 					/>
 				</Switch>
@@ -125,4 +139,4 @@ class Routes extends React.Component {
 	}
 }
 
-export default Routes;
+export default MainContainer;

@@ -18,16 +18,22 @@ const InstallConfirm = props => {
 	let btnPrevious = () => props.history.push(`/install/location`);
 	let btnNext = () => null;
 	let buttonOptions;
-
+	let customBtnOptions;
+	let header = 'Press Install to Install Analytix';
 	switch (props.status) {
 		case 'working':
 			buttonOptions = { loading: true, disabled: true, content: "Analytix Being Installed" };
+			header = 'Analytix is being installed, please wait...';
 			break;
 		case 'finished':
 			buttonOptions = { disabled: true, content: "Analytix Installed" };
+			customBtnOptions = {content: "Exit", positive: true}
+			header = 'Analytix has installed successfully, you may exit the installer.'
 			break;
 		case 'error':
 			buttonOptions = { disabled: true, content: "ERROR" };
+			customBtnOptions = {content: "Exit", color: "red"}
+			header = 'ERROR installing Analytix, please contact NCS support';
 			break;
 		default:
 			buttonOptions = { icon: 'computer', content: "Install Analytix"};
@@ -35,16 +41,21 @@ const InstallConfirm = props => {
 
 	return (
 		<Wrapper>
-			<Header>Press Install to Install Analytix</Header>
+			<Header>{header}</Header>
 			<Button positive
 				{...buttonOptions}
 			 	onClick={props.onInstallAnalytix}
 			/>
 			<br />
-			{props.status === 'finished'
-				? <Button primary onClick={() => remote.app.quit()}>Exit</Button>
-				: <ProgressButtons onPreviousClick={btnPrevious} onNextClick={btnNext} nextBtnDisabled />
-			}
+				<ProgressButtons
+					onPreviousClick={btnPrevious}
+					onNextClick={btnNext}
+					nextBtnDisabled
+					showCustomBtn={props.status === 'finished' || props.status === 'error'}
+					customBtnProperties={customBtnOptions}
+					onCustomBtnClick={() => remote.app.quit()}
+				/>
+
 
 		</Wrapper>
 	)
@@ -56,3 +67,9 @@ InstallConfirm.propTypes = {
 }
 
 export default InstallConfirm;
+
+//
+// {props.status === 'finished'
+// 	? <Button primary onClick={() => remote.app.quit()}>Exit</Button>
+// 	: <ProgressButtons onPreviousClick={btnPrevious} onNextClick={btnNext} nextBtnDisabled />
+// }

@@ -1,3 +1,3 @@
-//ODBC CONNECT TO [KellyDB] (UserId is adbase, Password is adbase); 
-ODBC CONNECT TO [KellyLocal] (UserId is adbase, Password is adbase); 
-SET DatabaseVendor = ORACLE;
+ODBC CONNECT TO [BIodbc_name] (UserId is theUsername, Password is thePassword);
+//SET DatabaseVendor = "ORACLE";
+SET DatabaseVendor = "SQLSERVER";

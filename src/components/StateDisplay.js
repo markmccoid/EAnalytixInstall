@@ -20,6 +20,11 @@ const StateDisplay = props => {
 						{statusMessage}
 					</div></strong>
 				</Message.Item>}
+				{status === 'finished' && <Message.Item><strong>Analytix Installed!
+					<div style={{wordWrap: "break-word", wordBreak: "break-word"}}>
+						{statusMessage}
+					</div></strong>
+				</Message.Item>}
 	      <Message.Item><strong>{formatType} Analytix</strong></Message.Item>
 	      {productionFolder && <Message.Item><strong>Production Folder:</strong>{productionFolder}</Message.Item>}
 				{backupFolder && props.type === 'upgrade' && <Message.Item><strong>Backup Folder:</strong>{backupFolder}</Message.Item>}
