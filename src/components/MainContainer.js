@@ -101,7 +101,18 @@ class MainContainer extends React.Component {
 	//--Upgrade functions
 	//------------------
 	createUpgradeBackup = (prodFolder, backupFolder) => {
-		nativeFileAccess.productionBackup(prodFolder, backupFolder);
+		this.setState({status: 'working'});
+		return nativeFileAccess.productionBackup(prodFolder, backupFolder)
+			.then(response => {
+				this.setState({status: response.status, statusMessage: response.msg});
+			});
+	}
+	upgradeAnalytixFiles = (prodFolder = this.state.productionFolder, backupFolder = this.state.backupFolder) => {
+		this.setState({status: 'working'});
+		return nativeFileAccess.upgradeAnalytixFiles(prodFolder, backupFolder)
+			.then(response => {
+				this.setState({status: response.status, statusMessage: response.msg});
+			});
 	}
 	render() {
 		return (
@@ -128,7 +139,18 @@ class MainContainer extends React.Component {
 					<Route path="/upgrade/backup" render={props => <UpgradeCreateBackup
 							{...this.state}
 							{...props}
+							currStep="backup"
 							onCreateUpgradeBackup={this.createUpgradeBackup}
+							onUpgradeAnalytixFiles={this.upgradeAnalytixFiles}
+						/>}
+					/>
+					{/*- Route for Upgrade -- Copying the New Files -- -*/}
+					<Route path="/upgrade/copyfiles" render={props => <UpgradeCreateBackup
+							{...this.state}
+							{...props}
+							currStep="copyfiles"
+							onCreateUpgradeBackup={this.createUpgradeBackup}
+							onUpgradeAnalytixFiles={this.upgradeAnalytixFiles}
 						/>}
 					/>
 				</Switch>

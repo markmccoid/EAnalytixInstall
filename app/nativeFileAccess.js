@@ -4,7 +4,9 @@ const fs = require('fs-extra');
 const _ = require('lodash');
 const { remote } = require('electron');
 
-const prodBackup = require('./productionBackup');
+const prodBackup = require('./upgrade/productionBackup');
+const copyUpgradeFiles = require('./upgrade/copyUpgradeFiles');
+const { renameAsarToHold, renameHoldToAsar } = require('./copyIncludeDir');
 
 const SETTINGS_FILE = process.env.NODE_ENV === 'development' ?
 											path.join(remote.app.getAppPath(),'AnalytixInstallerSettings.json') :
@@ -51,36 +53,18 @@ const stringifyError = errObj => {
 //--Install Analytix to 'productionFolder'
 const installAnalytix = productionFolder => {
 	let rootDataDir = getLocalPath('');
-	let groupASARBase = '/include/GroupEditor/resources';
-	let variableASARBase = '/include/VariableEditor/resources';
-	let groupASARLocation = getLocalPath(groupASARBase);
-	let variableASARLocation = getLocalPath(variableASARBase);
+	// let groupASARBase = '/include/GroupEditor/resources';
+	// let variableASARBase = '/include/VariableEditor/resources';
+	// let groupASARLocation = getLocalPath(groupASARBase);
+	// let variableASARLocation = getLocalPath(variableASARBase);
 
-	//We need to rename the ASAR files, because node thinks they are actual directories
-	let asarToHoldArray = [];
-	asarToHoldArray.push(fs.rename(path.join(groupASARLocation, 'app.asar'), path.join(groupASARLocation, 'app.hold')));
-	asarToHoldArray.push(fs.rename(path.join(groupASARLocation, 'electron.asar'), path.join(groupASARLocation, 'electron.hold')));
-	asarToHoldArray.push(fs.rename(path.join(variableASARLocation, 'app.asar'), path.join(variableASARLocation, 'app.hold')));
-	asarToHoldArray.push(fs.rename(path.join(variableASARLocation, 'electron.asar'), path.join(variableASARLocation, 'electron.hold')));
-	//--Setup the renaming of the .hold back to .asar in the data directory and also in the newly copied Analytix install directory
-	let renameToASAR = () => {
-		let backToASARArray = [];
-		backToASARArray.push(fs.rename(path.join(groupASARLocation, 'app.hold'), path.join(groupASARLocation, 'app.asar')));
-		backToASARArray.push(fs.rename(path.join(groupASARLocation, 'electron.hold'), path.join(groupASARLocation, 'electron.asar')));
-		backToASARArray.push(fs.rename(path.join(variableASARLocation, 'app.hold'), path.join(variableASARLocation, 'app.asar')));
-		backToASARArray.push(fs.rename(path.join(variableASARLocation, 'electron.hold'), path.join(variableASARLocation, 'electron.asar')));
-		//add the renaming of the .hold files in the newly installed Analytix directory
-		backToASARArray.push(fs.rename(path.join(productionFolder, groupASARBase, 'app.hold'), path.join(productionFolder, groupASARBase, 'app.asar')));
-		backToASARArray.push(fs.rename(path.join(productionFolder, groupASARBase, 'electron.hold'), path.join(productionFolder, groupASARBase, 'electron.asar')));
-		backToASARArray.push(fs.rename(path.join(productionFolder, variableASARBase, 'app.hold'), path.join(productionFolder, variableASARBase, 'app.asar')));
-		backToASARArray.push(fs.rename(path.join(productionFolder, variableASARBase, 'electron.hold'), path.join(productionFolder, variableASARBase, 'electron.asar')));
-		return backToASARArray;
-	}
+	let includePathSource = getLocalPath('/Include');
+	let includePathDest = path.join(productionFolder, '/Include');
 
-	//Start the install process.  First renaming all the .asar files to .hold
-	return Promise.all(asarToHoldArray) //--rename .asar to .hold
+	return renameAsarToHold(includePathSource) //--rename .asar to .hold
 		.then(() => fs.copy(rootDataDir, productionFolder)) //--copy analytix files to their new home
-		.then(() => Promise.all(renameToASAR())) //--rename .hold back to .asar in both the data directory and the newly installed dir.
+		.then(() => renameHoldToAsar(includePathSource)) //--rename .hold back to .asar in the data directory
+		.then(() => renameHoldToAsar(includePathDest)) //--rename .hold back to .asar in the newly installed dir.
 		.then(() => ({status: 'finished', msg: 'Analytix Installation Complete'})) //--return 'finished' status
 		.catch((err) => ({status: 'error', msg: stringifyError(err)})) //--if error return 'error' status
 }
@@ -88,12 +72,22 @@ const installAnalytix = productionFolder => {
 const productionBackup = (productionFolder, backupFolder) => {
 	let upgradeFolder = getLocalPath('');
 	console.log(upgradeFolder);
-	return prodBackup(productionFolder, upgradeFolder, backupFolder);
+	return prodBackup(productionFolder, upgradeFolder, backupFolder)
+		.then(() => ({status: 'finished', msg: 'Analytix Backup Complete'}))
+		.catch((err) => ({status: 'error', msg: stringifyError(err)}));
 }
+
+const upgradeAnalytixFiles = (productionFolder, backupFolder) => {
+	let upgradeFolder = getLocalPath('');
+	return copyUpgradeFiles(productionFolder, upgradeFolder, backupFolder)
+		.then(() => ({status: 'finished', msg: 'Analytix Copy Files Complete'}))
+		.catch((err) => ({status: 'error', msg: stringifyError(err)}));
+};
 
 module.exports = {
 	getLocalPath,
 	guessBackupDir,
 	installAnalytix,
-	productionBackup
+	productionBackup,
+	upgradeAnalytixFiles
 }
