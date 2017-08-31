@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'semantic-ui-react'
+import { Button, Popup } from 'semantic-ui-react'
 import styled  from 'styled-components';
 
 const ButtonWrapper = styled.div`
@@ -8,22 +8,46 @@ const ButtonWrapper = styled.div`
 	justify-content: space-around;
 `
 
+const popupButton = (WrappedButton, popupMsg) => {
+	return class PP extends React.Component {
+		render() {
+			if(popupMsg) {
+				return (
+					<Popup
+						trigger={	<WrappedButton {...this.props} />}
+						content={popupMsg}
+					/>
+				)
+			}
+			return <WrappedButton {...this.props} />
+		}
+	}
+};
+
 const ProgressButtons = props => {
 	let { onNextClick, onPreviousClick, nextBtnDisabled, prevBtnDisabled } = props;
+	let { prevToolTip, nextToolTip, customToolTip } = props.btnToolTips;
+//Create HOC button components
+	let PrevButton = popupButton(Button, prevToolTip);
+	let NextButton = popupButton(Button, nextToolTip);
+	let CustomButton = popupButton(Button, customToolTip);
 
 	return (
 		<ButtonWrapper>
-			<Button primary disabled={prevBtnDisabled}
+			<PrevButton primary
 				className={props.showCustomBtn ? "hide-element" : "main-buttons"}
-				onClick={() => props.onPreviousClick()}>
-				Previous
-			</Button>
-			<Button primary
+				disabled={prevBtnDisabled}
+				onClick={() => props.onPreviousClick()}
+				content="Previous"
+			/>
+
+			<NextButton primary
 				className={props.showCustomBtn ? "hide-element" : "main-buttons"}
 				disabled={nextBtnDisabled}
-				onClick={() => props.onNextClick()}>
-				Next
-			</Button>
+				onClick={() => props.onNextClick()}
+				content="Next"
+			/>
+
 			<Button
 				className={props.showCustomBtn ? "main-buttons" : "hide-element"}
 				onClick={() => props.onCustomBtnClick()}
@@ -43,6 +67,8 @@ ProgressButtons.propTypes = {
 	nextBtnDisabled: PropTypes.bool,
 	/*disables previous button if true*/
 	prevBtnDisabled: PropTypes.bool,
+	/*object with keys: prevToolTip, nextToolTip, customToolTip -- each value containing the tooltip for said button*/
+	btnToolTips: PropTypes.object,
 	/*if true, the previous and next buttons will be hidden and the custom button will be shown.*/
 	showCustomBtn: PropTypes.bool,
 	/*property object for a semantic ui Button component*/
@@ -50,6 +76,14 @@ ProgressButtons.propTypes = {
 	/*function called when custom button is pressed*/
 	onCustomBtnClick: PropTypes.func
 }
+
+ProgressButtons.defaultProps = {
+	btnToolTips: {
+		prevToolTip: undefined,
+		nextToolTip: undefined,
+		customToolTip: undefined
+	}
+};
 
 export default ProgressButtons;
 //

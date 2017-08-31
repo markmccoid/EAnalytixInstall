@@ -38,7 +38,9 @@ const UpgradeSettings = props => {
 
 UpgradeSettings.propTypes = {
 	onSelectProductionFolder: PropTypes.func,
-	onSelectBackupFolder: PropTypes.func
+	onSelectBackupFolder: PropTypes.func,
+	onSetUpgradeStep: PropTypes.func,
+	currUpgradeStep: PropTypes.string //'backup', 'copyfiles',
 };
 
 export default UpgradeSettings;

@@ -17,7 +17,7 @@ import Settings from './Settings/Settings';
 import ProgressButtons from './ProgressButtons';
 import StateDisplay from './StateDisplay';
 import InstallConfirm from './Install/InstallConfirm';
-import UpgradeCreateBackup from './Upgrade/UpgradeCreateBackup';
+import UpgradeSteps from './Upgrade/UpgradeSteps';
 
 import { Header } from './CommonStyled';
 
@@ -49,7 +49,7 @@ class MainContainer extends React.Component {
 				type: 'install', //or 'upgrade'
 				status: undefined, // or 'working' set status to working when installing or upgrading, 'finished' = success
 				statusMessage: undefined,
-				currentStep: 1
+				currUpgradeStep: 'backup'
 			};
 	}
 
@@ -73,12 +73,9 @@ class MainContainer extends React.Component {
 				backupFolder: folderSelected
 			});
 		}
-	//--Update the currentStep state value
-	updateCurrentStep = newStep => {
-		if (newStep === 2) {
-			this.props.history.push(`/${this.state.type}/location`);
-		}
-		this.setState({currentStep: newStep});
+	//--Update the current upgrade step state value
+	setUpgradeStep = newStep => {
+		this.setState({currUpgradeStep: newStep});
 	}
 	//-------------------------------
 	//--Update install type state
@@ -135,24 +132,16 @@ class MainContainer extends React.Component {
 							onInstallAnalytix={this.installAnalytix}
 						/>}
 					/>
-					{/*- Route for Upgrade -- creating the backup -- -*/}
-					<Route path="/upgrade/backup" render={props => <UpgradeCreateBackup
+					{/*- Route for Upgrade -- step param determines if we 'backup', 'copyfiles', 'mergefiles'-- -*/}
+					<Route path="/upgrade/:step" render={props => <UpgradeSteps
 							{...this.state}
 							{...props}
-							currStep="backup"
 							onCreateUpgradeBackup={this.createUpgradeBackup}
 							onUpgradeAnalytixFiles={this.upgradeAnalytixFiles}
+							onSetUpgradeStep={this.setUpgradeStep}
 						/>}
 					/>
-					{/*- Route for Upgrade -- Copying the New Files -- -*/}
-					<Route path="/upgrade/copyfiles" render={props => <UpgradeCreateBackup
-							{...this.state}
-							{...props}
-							currStep="copyfiles"
-							onCreateUpgradeBackup={this.createUpgradeBackup}
-							onUpgradeAnalytixFiles={this.upgradeAnalytixFiles}
-						/>}
-					/>
+
 				</Switch>
 
 				<StateDisplay {...this.state} />
