@@ -46,7 +46,7 @@ const UpgradeCreateBackup = props => {
 
 	return (
 		<Wrapper>
-			<h1>Press Next to continue with Upgrade</h1>
+			<h1 style={{textAlign: "center"}}>Press Next to continue with Upgrade</h1>
 			<Step.Group ordered>
 				{/*STEP 1 - Create Backup*/}
 				<Step
