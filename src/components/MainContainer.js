@@ -111,6 +111,13 @@ class MainContainer extends React.Component {
 				this.setState({status: response.status, statusMessage: response.msg});
 			});
 	}
+  mergeFiles = (prodFolder) => {
+		this.setState({status: 'working'});
+		return nativeFileAccess.mergeFiles(prodFolder)
+			.then(response => this.setState({status: response.status, statusMessage: response.msg}));
+
+	}
+
 	render() {
 		return (
 			<Wrapper>
@@ -139,6 +146,7 @@ class MainContainer extends React.Component {
 							onCreateUpgradeBackup={this.createUpgradeBackup}
 							onUpgradeAnalytixFiles={this.upgradeAnalytixFiles}
 							onSetUpgradeStep={this.setUpgradeStep}
+							onMergeFiles={this.mergeFiles}
 						/>}
 					/>
 

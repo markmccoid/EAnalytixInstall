@@ -94,7 +94,7 @@ const productionBackup = (PROD_DIR, UPG_DIR, BAK_DIR) => {
           fs.writeFileSync(path.join(UPG_DIR, 'UPG_ProductionBackup.log'), logContents);
           resolve(0)
         })
-      .catch(e => reject(1));
+      .catch(e => reject(e));
   });
   return returnPromise;
 };

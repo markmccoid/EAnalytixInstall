@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled  from 'styled-components';
 import { Button, Step, Message } from 'semantic-ui-react';
+const { remote } = require('electron');
 
 import ProgressButtons from '../ProgressButtons';
 
@@ -15,8 +16,12 @@ const Wrapper = styled.div`
 const UpgradeCreateBackup = props => {
 	let currStep = props.match.params.step;
 	let btnPrevious = () => props.history.push('/upgrade/location');
-	let btnNext;
+	let btnNext, btnCustom;
 	let btnToolTips = {};
+	//These properties will be used to show the finished screen.
+	let showFinishedBtn = false;
+	let finishedBtnProperties = {};
+
 	switch (currStep){
 		case 'backup':
 		//create the function to be called when the next button is pressed
@@ -40,6 +45,22 @@ const UpgradeCreateBackup = props => {
 			};
 			btnToolTips.nextToolTip = 'Copy Upgrade Files'
 			break;
+		case 'mergefiles':
+			btnNext = () => {
+				props.onMergeFiles(props.productionFolder)
+					.then((response) => {
+						console.log('pushing /upgrade/finished');
+						props.history.push('/upgrade/finished');
+					});
+			};
+			btnToolTips.nextToolTip = 'Merge qvVariables and qvGroups Files'
+			break;
+		case 'finished':
+			btnCustom = () => remote.app.quit();
+			showFinishedBtn = true;
+			finishedBtnProperties = {content: "Exit", positive: true}
+			btnToolTips.customToolTip = 'Analytix Upgraded...Exit'
+			break;
 		default:
 			btnNext = () => alert('ERROR');
 	}
@@ -47,60 +68,48 @@ const UpgradeCreateBackup = props => {
 	return (
 		<Wrapper>
 			<h1 style={{textAlign: "center"}}>Press Next to continue with Upgrade</h1>
-			<Step.Group ordered>
+			<Step.Group>
 				{/*STEP 1 - Create Backup*/}
 				<Step
+					icon={props.status==='working' && currStep === 'backup' ? 'loading spinner' : 'file'}
 					completed={currStep !== 'backup'}
 					active={currStep === 'backup'}
-				>
-					<Step.Content>
-						<Step.Title>Backup</Step.Title>
-						<Step.Description>Backup Production files</Step.Description>
-						{props.status === 'working' && currStep === 'backup' && <Button
-							loading
-							disabled
-							content="Backing up Production Files"
-						/>}
-					</Step.Content>
-				</Step>
+					title='Backup'
+					description='Backup Production Files'
+				/>
 				{/*STEP 2 - Copy Upgrade Files*/}
 				<Step
+					icon={props.status === 'working' && currStep === 'copyfiles' ? 'loading spinner' : 'copy'}
 					completed={currStep !== 'copyfiles' && currStep !=='backup'}
 					active={currStep === 'copyfiles'}
-				>
-					<Step.Title>Copy New Files</Step.Title>
-					<Step.Description>Copy new Analytix files production</Step.Description>
-					{props.status === 'working' && currStep === 'copyfiles' && <Button
-						loading
-						disabled
-						content="Copying Upgrade Files"
-					/>}
-				</Step>
+					title='Copy'
+					description='Copy Upgrade Files'
+				/>
+
 				{/*STEP 3 - Merge Variable File*/}
 				<Step
+					icon={props.status === 'working' && currStep === 'mergefiles' ? 'loading spinner' : 'translate'}
 					completed={currStep !== 'copyfiles' && currStep !=='backup' && currStep !== 'mergefiles'}
 					active={currStep === 'mergefiles'}
-				>
-					<Step.Title>Merge Variables File</Step.Title>
-					<Step.Description>Merge Upgrade and Production Variables files</Step.Description>
-					{props.status === 'working' && currStep === 'mergefiles' && <Button
-						loading
-						disabled
-						content="Merging Variable and Group Files"
-					/>}
-				</Step>
+					title='Merge'
+					description='Merging Variable and Group Files'
+				/>
 			</Step.Group>
 			<br />
 			<ProgressButtons
 				onPreviousClick={btnPrevious}
 				onNextClick={btnNext}
 				btnToolTips={btnToolTips}
+				showCustomBtn={showFinishedBtn}
+				customBtnProperties={finishedBtnProperties}
+				onCustomBtnClick={btnCustom}
 			/>
 		</Wrapper>
 	);
 };
 
 UpgradeCreateBackup.propTypes = {
-	onCreateUpgradeBackup: PropTypes.func
+	onCreateUpgradeBackup: PropTypes.func,
+	onMergeFiles: PropTypes.func
 }
 export default UpgradeCreateBackup;

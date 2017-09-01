@@ -48,7 +48,7 @@ const ProgressButtons = props => {
 				content="Next"
 			/>
 
-			<Button
+			<CustomButton
 				className={props.showCustomBtn ? "main-buttons" : "hide-element"}
 				onClick={() => props.onCustomBtnClick()}
 				{...props.customBtnProperties}

@@ -7,7 +7,8 @@ const { remote } = require('electron');
 const prodBackup = require('./upgrade/productionBackup');
 const copyUpgradeFiles = require('./upgrade/copyUpgradeFiles');
 const { renameAsarToHold, renameHoldToAsar } = require('./copyIncludeDir');
-
+const { mergeQVVars } = require('./upgrade/mergeFiles');
+console.log(mergeQVVars);
 const SETTINGS_FILE = process.env.NODE_ENV === 'development' ?
 											path.join(remote.app.getAppPath(),'AnalytixInstallerSettings.json') :
 											path.join(path.dirname(remote.app.getPath('exe')),'AnalytixInstallerSettings.json');
@@ -84,10 +85,21 @@ const upgradeAnalytixFiles = (productionFolder, backupFolder) => {
 		.catch((err) => ({status: 'error', msg: stringifyError(err)}));
 };
 
+const mergeFiles = (productionFolder) => {
+	let upgradeFolder = getLocalPath('');
+	let siteQVVarsFile = path.join(productionFolder, 'include/VariableEditor/data/SITE_qvVariables.json');
+	let upgQVVarsFile = path.join(productionFolder, 'include/VariableEditor/data/qvVariables.json');
+
+	return mergeQVVars(siteQVVarsFile, upgQVVarsFile, productionFolder)
+		.then(response => ({status: 'finished', msg: response}))
+		.catch(err => ({status: 'error', msg: stringifyError(err)}));
+}
+
 module.exports = {
 	getLocalPath,
 	guessBackupDir,
 	installAnalytix,
 	productionBackup,
-	upgradeAnalytixFiles
+	upgradeAnalytixFiles,
+	mergeFiles
 }
