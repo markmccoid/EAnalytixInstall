@@ -19,7 +19,7 @@ const popupButton = (WrappedButton, popupMsg) => {
           />
         );
       }
-      return <WrappedButton {...this.props} />;
+      return (<WrappedButton {...this.props} />);
     }
   };
 };
@@ -41,18 +41,19 @@ const ProgressButtons = (props) => {
         content='Previous'
       />
 
-      <NextButton primary
-        className={props.showCustomBtn ? 'hide-element' : 'main-buttons'}
-        disabled={nextBtnDisabled}
-        onClick={() => onNextClick()}
-        content='Next'
-      />;
-
       <CustomButton
         className={props.showCustomBtn ? 'main-buttons' : 'hide-element'}
         onClick={() => props.onCustomBtnClick()}
         {...props.customBtnProperties}
       />
+
+      <NextButton primary
+        className={props.showCustomBtn ? 'hide-element' : 'main-buttons'}
+        disabled={nextBtnDisabled}
+        onClick={() => onNextClick()}
+        content='Next'
+      />
+
     </ButtonWrapper>
   );
 };

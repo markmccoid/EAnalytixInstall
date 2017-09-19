@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled  from 'styled-components';
-import { Button } from 'semantic-ui-react';
 import { Input } from 'semantic-ui-react';
 
 import { Header } from '../CommonStyled';
@@ -13,24 +12,24 @@ const Wrapper = styled.div`
 	margin: 10px;
 `;
 
-const InstallSettings = props => {
-		return (
-			<Wrapper>
-				<Header textAlign="left">Select location of Analytix production directory</Header>
-				<Input
-					size="small my-input-size"
-					icon={{ name: 'folder open outline', circular: true, link: true, onClick: props.onSelectProductionFolder}}
-					placeholder='Choose Production Folder...'
-					value={props.productionFolder}
-					onChange={(e, data) => props.onManualProductionFolder(data.value)}
-				/>
-			</Wrapper>
-		);
+const InstallSettings = (props) => {
+  return (
+    <Wrapper>
+      <Header textAlign="left">Select location of Analytix production directory</Header>
+      <Input
+        size="small my-input-size"
+        icon={{ name: 'folder open outline', circular: true, link: true, onClick: props.onSelectProductionFolder}}
+        placeholder='Choose Production Folder...'
+        value={props.productionFolder}
+        onChange={(e, data) => props.onManualProductionFolder(data.value)}
+      />
+    </Wrapper>
+  );
 };
 
 InstallSettings.propTypes = {
-	productionFolder: PropTypes.string,
-	onSelectProductionFolder: PropTypes.func,
-	onManualProductionFolder: PropTypes.func
+  productionFolder: PropTypes.string,
+  onSelectProductionFolder: PropTypes.func,
+  onManualProductionFolder: PropTypes.func
 };
 export default InstallSettings;

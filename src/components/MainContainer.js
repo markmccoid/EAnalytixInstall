@@ -138,7 +138,6 @@ class MainContainer extends React.Component {
           />
         </Switch>
 
-
         <StateDisplay {...this.state} />
       </Wrapper>
     );

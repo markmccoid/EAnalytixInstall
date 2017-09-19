@@ -18,9 +18,9 @@
 			"buildResources": "./assets",
 			"output": "./dist"
 		},
-		"extraFiles": "./data/*",
+		"extraFiles": "./data/**/*",
 		"win": {
-			"icon": "build/icon.ico"
+			"icon": "assets/icon.ico"
 		}
 	},
 	"author": "markmccoid",

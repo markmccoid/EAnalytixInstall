@@ -91,7 +91,6 @@ const upgradeAnalytixFiles = (productionFolder, backupFolder = '') => {
 //--Merges the qvVariables.json from upgrade with the production version then writes out new XML filess to spreadsheet directory.
 //--Merges the qvGroups.json from upgrade with the production version then writes out new XML filess to spreadsheet directory.
 const mergeFiles = (productionFolder) => {
-  let upgradeFolder = getLocalPath('');
   let siteQVVarsFile = path.join(productionFolder, 'include/VariableEditor/data/SITE_qvVariables.json');
   let upgQVVarsFile = path.join(productionFolder, 'include/VariableEditor/data/qvVariables.json');
 
@@ -99,7 +98,7 @@ const mergeFiles = (productionFolder) => {
     .then(exportVariableXMLFiles(productionFolder))
     .then(mergeQVGroups(siteQVVarsFile, upgQVVarsFile, productionFolder))
     .then(exportGroupXMLFiles(productionFolder))
-    .then((response) => ({status: 'finished', msg: response}))
+    .then(() => ({status: 'finished', msg: 'QV Variable and QV Group files merged and XML Exported to Spreadsheets folder'}))
     .catch((err) => ({status: 'error', msg: stringifyError(err)}));
 };
 

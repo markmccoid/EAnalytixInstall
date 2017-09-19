@@ -20,7 +20,7 @@ require('./styles/app.scss');
 
 //path="/" designates the root of the application
 ReactDOM.render(
-	<Main />,
+  <Main />,
   document.getElementById('app')
 );
 //Old ReactDom render method without routing
