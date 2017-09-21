@@ -24,8 +24,8 @@ app.on('ready', () => {
   });
   mainWindow.loadURL(`file://${__dirname}/public/index.html`);
   //Attach the main Menu
-  const mainMenu = Menu.buildFromTemplate(menuTemplate);
-  Menu.setApplicationMenu(mainMenu);
+  // const mainMenu = Menu.buildFromTemplate(menuTemplate);
+  // Menu.setApplicationMenu(mainMenu);
 
   if (process.env.NODE_ENV === 'development') {
     mainWindow.toggleDevTools();
