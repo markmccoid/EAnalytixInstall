@@ -22,9 +22,9 @@ const UpgradeCreateBackup = (props) => {
   let showFinishedBtn = false;
   let finishedBtnProperties = {};
 
-  switch (currStep){
+  switch (currStep) {
     case 'backup':
-    //create the function to be called when the next button is pressed
+      //create the function to be called when the next button is pressed
       btnNext = () => {
         props.onCreateUpgradeBackup(props.productionFolder, props.backupFolder)
           .then(() => {

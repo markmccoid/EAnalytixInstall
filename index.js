@@ -1,10 +1,10 @@
 const path = require('path');
 const electron = require('electron');
-const { app, BrowserWindow, Menu } = electron;
-//const groupFileAccess = require('./app/groupFileAccess');
+const { app, BrowserWindow, Menu, dialog } = electron;
+//const groupFileAccess = require, ('./app/groupFileAccess');
 
 let mainWindow;
-
+//app.on ready callback ----------------------------------
 app.on('ready', () => {
 //--Set up dev tools if in development mode development is for work computer, dev-home is for home computer
   if (process.env.NODE_ENV === 'development') {
@@ -24,18 +24,46 @@ app.on('ready', () => {
   });
   mainWindow.loadURL(`file://${__dirname}/public/index.html`);
   //Attach the main Menu
-  // const mainMenu = Menu.buildFromTemplate(menuTemplate);
-  // Menu.setApplicationMenu(mainMenu);
+  const mainMenu = Menu.buildFromTemplate(menuTemplate);
+  Menu.setApplicationMenu(mainMenu);
 
   if (process.env.NODE_ENV === 'development') {
     mainWindow.toggleDevTools();
   }
   mainWindow.on('ready-to-show', () => {
     mainWindow.show();
+    mainWindow.focus();
   });
 });
+//END app.on ready callback ----------------------------------
 
-//-------------
+//------------------------------------------------
+//Setup Help window function to show help from menu
+//The showUserGuide function is called from the Help/User Guide menu option
+let helpWindow;
+const showUserGuide = () => {
+  //If helpWindow already defined, give it focus and leave function
+  if (helpWindow) {
+    helpWindow.focus();
+    return;
+  }
+  //Define new BrowserWindow
+  helpWindow = new BrowserWindow({
+    width: 1000,
+    height: 1000,
+    title: 'Analytix Installer User Guide',
+    icon: path.join(__dirname, 'assets/icon.ico')
+  });
+  //When use closes help window, null its variable
+  helpWindow.on('closed', () => {
+    helpWindow = null;
+  });
+  //Load help file HTML file into BrowserWindow
+  helpWindow.loadURL(`file://${__dirname}/public/EAInstallerHelp.html`);
+};
+//------------------------------------------------
+
+//------------------------------------------------
 //-Close process when all windows are closed
 app.on('window-all-closed', function() {
   if (process.platform != 'darwin') {
@@ -43,7 +71,9 @@ app.on('window-all-closed', function() {
   }
 });
 
-//------------------------------------------
+//------------------------------------------------
+//MENU Setup
+//------------------------------------------------
 const exitAccelerator = process.platform === 'darwin' ? 'Command+Q' : 'Ctrl+Q';
 const devMenu = 	{
   label: 'Dev',
@@ -65,6 +95,25 @@ let menuTemplate = [
           app.quit();
         }
       }
+    ]
+  },
+  {
+    label: 'Help',
+    submenu: [
+      {
+        label: 'User Guide',
+        click() {
+          showUserGuide();
+        }
+      },
+      {type: 'separator'},
+      {
+        label: 'About',
+        click() {
+          let message = 'Analytix Installer V1.0 \nAnalytix Version 2017-3';
+          dialog.showMessageBox({type: 'info', message, title: 'Newscycle Solutions - Analytix Installer'});
+        }
+      }      
     ]
   }
 ];
