@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   margin: 10px;
 `;
 
-const UpgradeCreateBackup = (props) => {
+const UpgradeSteps = (props) => {
   let currStep = props.match.params.step;
   let btnPrevious = () => props.history.push('/upgrade/location');
   let btnNext, btnCustom;
@@ -108,9 +108,9 @@ const UpgradeCreateBackup = (props) => {
   );
 };
 
-UpgradeCreateBackup.propTypes = {
+UpgradeSteps.propTypes = {
   onCreateUpgradeBackup: PropTypes.func,
   onMergeFiles: PropTypes.func
 };
 
-export default UpgradeCreateBackup;
+export default UpgradeSteps;

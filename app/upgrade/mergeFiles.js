@@ -13,6 +13,7 @@ const X2JS = require('x2js');
 
 //Create a function that accepts a filename and returns a promise
 //that will resolve with the file contents when done being read
+//Note, I believe that the fs-extra module already returns a promise from its readFile function
 const fileReadPromise = (file) => {
   return new Promise((resolve, reject) => {
     fs.readFile(file, 'utf8', (err, data) => {

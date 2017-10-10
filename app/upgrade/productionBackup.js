@@ -17,7 +17,7 @@ let getCurrDateTime = require('../helpers').getCurrDateTime;
 //   });
 // }
 const productionBackup = (PROD_DIR, UPG_DIR, BAK_DIR) => {
-  let logContents = getCurrDateTime() + '- Start Production Backup\n'
+  let logContents = getCurrDateTime() + '- Start Production Backup\n';
   //-- console.log('Start Production Backup');
   //Copy the directories that we want all files:
   try {
@@ -47,54 +47,54 @@ const productionBackup = (PROD_DIR, UPG_DIR, BAK_DIR) => {
     .glob('*Connection.txt*')
     .find();
 
-	//Create array of promises to process
-	let backupPromiseArray = [];
+  //Create array of promises to process
+  let backupPromiseArray = [];
   //connectFiles is a promise, when returns copy each file to the BAK directory
   backupPromiseArray.push(connectFiles
-    .then(theFiles => {
-      theFiles.forEach(theFile => {
+    .then((theFiles) => {
+      theFiles.forEach((theFile) => {
         fs.copySync(path.normalize(theFile), path.join(BAK_DIR, path.basename(theFile)));
         logContents += `${getCurrDateTime()}- Copied \n FROM ${path.normalize(theFile)} \n TO   ${path.join(BAK_DIR, path.basename(theFile))}\n`;
         //-- console.log(`Copying from ${path.normalize(theFile)} to ${path.join(BAK_DIR, path.basename(theFile))}`);
       });
     })
-	);
+  );
 
   //QVDFiles is a promise, when returns copy each file to the BAK/QVD directory
   backupPromiseArray.push(QVDFiles
-    .then(theFiles => {
+    .then((theFiles) => {
       //Make sure directory exists and then copy the files over.
       fs.ensureDirSync(path.join(BAK_DIR, 'QVD'));
-        //Loop through each file and copy it to the backup destination
-        theFiles.forEach(theFile => {
-          logContents += `${getCurrDateTime()}- Copied \n FROM ${path.normalize(theFile)} \n TO   ${path.join(BAK_DIR, 'QVD', path.basename(theFile))}\n`;
-          //-- console.log(`Copying from ${path.normalize(theFile)} to ${path.join(BAK_DIR, 'QVD', path.basename(theFile))}`);
-          fs.copySync(path.normalize(theFile), path.join(BAK_DIR, 'QVD', path.basename(theFile)));
-        });
-	  })
-	);
+      //Loop through each file and copy it to the backup destination
+      theFiles.forEach((theFile) => {
+        logContents += `${getCurrDateTime()}- Copied \n FROM ${path.normalize(theFile)} \n TO   ${path.join(BAK_DIR, 'QVD', path.basename(theFile))}\n`;
+        //-- console.log(`Copying from ${path.normalize(theFile)} to ${path.join(BAK_DIR, 'QVD', path.basename(theFile))}`);
+        fs.copySync(path.normalize(theFile), path.join(BAK_DIR, 'QVD', path.basename(theFile)));
+      });
+    })
+  );
 
-	//Copy the include directory
-	let includePathSource = path.join(PROD_DIR, 'Include');
-	let includePathDest = path.join(BAK_DIR, 'Include');
+  //Copy the include directory
+  let includePathSource = path.join(PROD_DIR, 'Include');
+  let includePathDest = path.join(BAK_DIR, 'Include');
 
-	backupPromiseArray.push(renameAsarToHold(includePathSource) //--rename .asar to .hold in the source dir
-		.then(() => fs.copy(includePathSource, includePathDest)) //--copy analytix files to their new home
-		.then(() => renameHoldToAsar(includePathSource)) //--rename .hold back to .asar in the data directory
-		.then(() => renameHoldToAsar(includePathDest)) //--rename .hold back to .asar in the newly installed dir.
-		.then(() => logContents += `${getCurrDateTime()}- Include directory copied\n`)
-	);
+  backupPromiseArray.push(renameAsarToHold(includePathSource) //--rename .asar to .hold in the source dir
+    .then(() => fs.copy(includePathSource, includePathDest)) //--copy analytix files to their new home
+    .then(() => renameHoldToAsar(includePathSource)) //--rename .hold back to .asar in the data directory
+    .then(() => renameHoldToAsar(includePathDest)) //--rename .hold back to .asar in the newly installed dir.
+    .then(() => logContents += `${getCurrDateTime()}- Include directory copied\n`)
+  );
 
-//Create a promise that will resolve when both fileHound file lists have been processed.
+  //Create a promise that will resolve when both fileHound file lists have been processed.
   const returnPromise = new Promise((resolve, reject) => {
     Promise.all(backupPromiseArray)
-      .then(values => {
-					logContents += `Analytix files in \n ${PROD_DIR} \n backed up to \n ${BAK_DIR}\n`;
-					logContents += `===============================================================`;
-          fs.writeFileSync(path.join(UPG_DIR, 'UPG_ProductionBackup.log'), logContents);
-          resolve(0)
-        })
-      .catch(e => reject(e));
+      .then(() => {
+        logContents += `Analytix files in \r\n ${PROD_DIR} \r\n backed up to \r\n ${BAK_DIR}\r\n`;
+        logContents += '===============================================================';
+        fs.writeFileSync(path.join(UPG_DIR, 'UPG_ProductionBackup.log'), logContents);
+        resolve(0);
+      })
+      .catch((e) => reject(e));
   });
   return returnPromise;
 };

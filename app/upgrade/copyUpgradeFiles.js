@@ -112,7 +112,7 @@ const copyUpgradeFiles = (PROD_DIR, UPG_DIR, BAK_DIR) => {
   //Create a promise that will resolve when all fileHound file lists have been processed.
   const returnPromise = new Promise((resolve, reject) => {
     Promise.all([includeFiles, sourceQVWfiles, QVD_QVWfiles, QVWfiles])
-      .then((values) => {
+      .then(() => {
         fs.writeFileSync(path.join(UPG_DIR, 'UPG_CopyUpgrade.log'), logContents);
         resolve(0);
       })

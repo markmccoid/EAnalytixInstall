@@ -8,15 +8,14 @@ const prodBackup = require('./upgrade/productionBackup');
 const copyUpgradeFiles = require('./upgrade/copyUpgradeFiles');
 const { renameAsarToHold, renameHoldToAsar } = require('./copyIncludeDir');
 const { mergeQVVars, mergeQVGroups, writeXMLData } = require('./upgrade/mergeFiles');
-console.log(mergeQVVars);
+const { createLogFile, updateLogFile } = require('./helpers');
+
 // const SETTINGS_FILE = process.env.NODE_ENV === 'development' ?
 //   path.join(remote.app.getAppPath(),'AnalytixInstallerSettings.json') :
 //   path.join(path.dirname(remote.app.getPath('exe')),'AnalytixInstallerSettings.json');
 
 
 //Can't access the remote.app. feature except from within a function.  Probably after app has loaded.
-//passed either GROUPS_FILE or FIELDS_FILE, will return the path, relative to where the GroupCreate.EXE
-//is located.
 //--getLocalPath will return the full path to the directory passed
 //--OR if a filename is passed it will return the full path to the file along with the filename
 //--If '/dir1/subdir' passed then 'c:.../dir1/subdir' returned
@@ -37,6 +36,7 @@ const guessBackupDir = (productionFolder) => {
   return path.join(productionFolder, '../BackupAnalytix');
 };
 
+//--Takes an errObj and flattens it to an string listing "Property: Message"
 const stringifyError = (errObj) => {
   let err = [];
   if (typeof errObj === 'object') {
@@ -47,9 +47,8 @@ const stringifyError = (errObj) => {
   }
   //else not an object so just return what was passed
   return errObj;
-
-
 };
+
 //-------------------------------------------
 //--Install Analytix to 'productionFolder'
 const installAnalytix = (productionFolder) => {
@@ -118,6 +117,7 @@ const exportGroupXMLFiles = (productionFolder) => {
   //--will return a promise
   return writeXMLData(applicationList, qvVarsObj, spreadsheetFolder, 'group');
 };
+
 
 module.exports = {
   getLocalPath,
