@@ -25,7 +25,7 @@ const createLogFile = (fullPath, fileName, logData) => {
 };
 const updateLogFile = (fullPath, fileName, logData) => {
   //This is a destructive call. If file exists, it will be overwritten
-  fs.appendFileSync(path.join(fullPath, fileName), logData);
+  fs.appendFile(path.join(fullPath, fileName), logData);
 };
 
 module.exports = {

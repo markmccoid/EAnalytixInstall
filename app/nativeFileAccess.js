@@ -8,7 +8,7 @@ const prodBackup = require('./upgrade/productionBackup');
 const copyUpgradeFiles = require('./upgrade/copyUpgradeFiles');
 const { renameAsarToHold, renameHoldToAsar } = require('./copyIncludeDir');
 const { mergeQVVars, mergeQVGroups, writeXMLData } = require('./upgrade/mergeFiles');
-const { createLogFile, updateLogFile } = require('./helpers');
+const { getCurrDateTime } = require('./helpers');
 
 // const SETTINGS_FILE = process.env.NODE_ENV === 'development' ?
 //   path.join(remote.app.getAppPath(),'AnalytixInstallerSettings.json') :
@@ -60,11 +60,17 @@ const installAnalytix = (productionFolder) => {
 
   let includePathSource = getLocalPath('/Include');
   let includePathDest = path.join(productionFolder, '/Include');
+  let logContents = `${getCurrDateTime()} - Installation of Analytix Start`;
 
   return renameAsarToHold(includePathSource) //--rename .asar to .hold
+    .then((result) => logContents += `\r\n${getCurrDateTime()} - ${result}`) //update logContents with result from previous
     .then(() => fs.copy(rootDataDir, productionFolder)) //--copy analytix files to their new home
+    .then(() => logContents += `\r\n${getCurrDateTime()} - Copy of Analytix to "${productionFolder}" Complete`) //update logContents with result from previous    
     .then(() => renameHoldToAsar(includePathSource)) //--rename .hold back to .asar in the data directory
+    .then((result) => logContents += `\r\n${getCurrDateTime()} - ${result}`) //update logContents with result from previous    
     .then(() => renameHoldToAsar(includePathDest)) //--rename .hold back to .asar in the newly installed dir.
+    .then((result) => logContents += `\r\n${getCurrDateTime()} - ${result}`) //update logContents with result from previous    
+    .then(() => fs.writeFile(path.join(rootDataDir, 'INSTALL_Analytix.log'), logContents)) //Write logfile to disk
     .then(() => ({status: 'finished', msg: 'Analytix Installation Complete'})) //--return 'finished' status
     .catch((err) => ({status: 'error', msg: stringifyError(err)})); //--if error return 'error' status
 };
@@ -73,7 +79,6 @@ const installAnalytix = (productionFolder) => {
 //--Not a straight copy, doesn't backup QVD files, etc.
 const productionBackup = (productionFolder, backupFolder) => {
   let upgradeFolder = getLocalPath('');
-  console.log(upgradeFolder);
   return prodBackup(productionFolder, upgradeFolder, backupFolder)
     .then(() => ({status: 'finished', msg: 'Analytix Backup Complete'}))
     .catch((err) => ({status: 'error', msg: stringifyError(err)}));
@@ -102,20 +107,24 @@ const mergeFiles = (productionFolder) => {
 };
 
 const exportVariableXMLFiles = (productionFolder) => {
+  let rootDataDir = getLocalPath('');
   let spreadsheetFolder = path.join(productionFolder, '/Include/Spreadsheets');
   let qvVarsFile = path.join(productionFolder, '/Include/VariableEditor/data/qvVariables.json');
   let qvVarsObj = JSON.parse(fs.readFileSync(qvVarsFile));
   let applicationList = _.uniq(qvVarsObj.map((varObj) => varObj.application));
   //--will return a promise
-  return writeXMLData(applicationList, qvVarsObj, spreadsheetFolder, 'variable');
+  return writeXMLData(applicationList, qvVarsObj, spreadsheetFolder, 'variable')
+    .then((result) => fs.writeFile(path.join(rootDataDir, 'MERGE_AnalytixVarFile.log'), result)); //Write logfile to disk);
 };
 const exportGroupXMLFiles = (productionFolder) => {
+  let rootDataDir = getLocalPath('');
   let spreadsheetFolder = path.join(productionFolder, '/Include/Spreadsheets');
   let qvVarsFile = path.join(productionFolder, '/Include/GroupEditor/data/qvgroups.json');
   let qvVarsObj = JSON.parse(fs.readFileSync(qvVarsFile));
   let applicationList = _.uniq(qvVarsObj.map((varObj) => varObj.application));
   //--will return a promise
-  return writeXMLData(applicationList, qvVarsObj, spreadsheetFolder, 'group');
+  return writeXMLData(applicationList, qvVarsObj, spreadsheetFolder, 'group')
+    .then((result) => fs.writeFile(path.join(rootDataDir, 'MERGE_AnalytixGroupFile.log'), result));
 };
 
 

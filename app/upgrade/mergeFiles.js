@@ -10,6 +10,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const X2JS = require('x2js');
+const { getCurrDateTime } = require('../helpers');
 
 //Create a function that accepts a filename and returns a promise
 //that will resolve with the file contents when done being read
@@ -50,10 +51,12 @@ const writeXMLData = (appNameArray, qvObj, spreadsheet_DIR, XMLContainer = 'vari
     //write the groups array back to the server disk navigating to the include directory
     let xmlFilePathName = path.join(spreadsheet_DIR, appFileName);
     //Since using fs-extra, writeFile has been promisified
-    return fs.writeFile(xmlFilePathName, applicationVars);
+    return fs.writeFile(xmlFilePathName, applicationVars)
+      .then(() => `${appFileName} created in "${spreadsheet_DIR}"`);
   });
 
-  return Promise.all(writeXMLPromiseArray);
+  return Promise.all(writeXMLPromiseArray)
+    .then((result) => result.join('\r\n'));
 };
 
 

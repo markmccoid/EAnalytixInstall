@@ -18,7 +18,9 @@ const renameAsarToHold = (includeDir) => {
   asarToHoldArray.push(fs.rename(path.join(variableASARLocation, 'app.asar'), path.join(variableASARLocation, 'app.hold')));
   asarToHoldArray.push(fs.rename(path.join(variableASARLocation, 'electron.asar'), path.join(variableASARLocation, 'electron.hold')));
 
-  return Promise.all(asarToHoldArray);
+  return Promise.all(asarToHoldArray)
+    .then(() => `asarToHoldArray Processed Successfully in "${includeDir}"`)
+    .catch((err) => `asarToHoldArray Error: ${err}`);
 };
 
 //==-==-==-==-==-
@@ -34,10 +36,12 @@ const renameHoldToAsar = (includeDir) => {
   backToASARArray.push(fs.rename(path.join(variableASARLocation, 'app.hold'), path.join(variableASARLocation, 'app.asar')));
   backToASARArray.push(fs.rename(path.join(variableASARLocation, 'electron.hold'), path.join(variableASARLocation, 'electron.asar')));
 
-  return Promise.all(backToASARArray);
+  return Promise.all(backToASARArray)
+    .then(() => `renameHoldToAsar Processed Successfully in "${includeDir}"`)
+    .catch((err) => `renameHoldToAsar Error: ${err}`);
 };
 
 module.exports = {
   renameAsarToHold,
   renameHoldToAsar
-}
+};
