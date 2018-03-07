@@ -21,7 +21,9 @@ class Settings extends React.Component {
   //---
  selectProductionFolder = () => {
    let folderSelected = this.showFolderDialog('Select Analytix Production Folder');
-   folderSelected = this.props.type === 'install' ? folderSelected + '\\Analytix' : folderSelected;
+   //Remove the trailing back slash if it exists
+   folderSelected = folderSelected.replace(/\\$/, '');
+   folderSelected = this.props.type === 'install' ? `${folderSelected}\\Analytix` : folderSelected;
    this.props.onStoreProductionFolder(folderSelected);
  }
  manualFolderStore = (ProdOrBackup) => (folder) => {
